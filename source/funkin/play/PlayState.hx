@@ -2936,39 +2936,14 @@ class PlayState extends MusicBeatSubState
         if (FlxG.sound.music != null) FlxG.sound.music.stop();
         vocals.stop();
 
-        // TODO: Softcode this cutscene.
-        if (currentSong.id == 'eggnog')
-        {
-          var blackBG:FunkinSprite = new FunkinSprite(-FlxG.width * FlxG.camera.zoom, -FlxG.height * FlxG.camera.zoom);
-          blackBG.makeSolidColor(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
-          blackBG.scrollFactor.set();
-          add(blackBG);
-          camHUD.visible = false;
-          isInCutscene = true;
-
-          FunkinSound.playOnce(Paths.sound('Lights_Shut_off'), function() {
-            // no camFollow so it centers on horror tree
-            var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
-            LoadingState.loadPlayState(
-              {
-                targetSong: targetSong,
-                targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-                targetVariation: currentVariation,
-                cameraFollowPoint: cameraFollowPoint.getPosition(),
-              });
+        var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
+        LoadingState.loadPlayState(
+          {
+            targetSong: targetSong,
+            targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+            targetVariation: currentVariation,
+            cameraFollowPoint: cameraFollowPoint.getPosition(),
           });
-        }
-        else
-        {
-          var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
-          LoadingState.loadPlayState(
-            {
-              targetSong: targetSong,
-              targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-              targetVariation: currentVariation,
-              cameraFollowPoint: cameraFollowPoint.getPosition(),
-            });
-        }
       }
     }
     else

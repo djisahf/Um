@@ -667,6 +667,7 @@ class PlayState extends MusicBeatSubState
     {
       currentChart.cacheInst();
       currentChart.cacheVocals();
+      currentChart.loadInst(1.0, currentInstrumental, false); // load inst to prevent syncing issues
     }
 
     // Prepare the Conductor.
@@ -1843,6 +1844,7 @@ class PlayState extends MusicBeatSubState
       // Stop the vocals if they already exist.
       if (vocals != null) vocals.stop();
       vocals = currentChart.buildVocals();
+      add(vocals); // add vocals
 
       if (vocals.members.length == 0)
       {
@@ -1979,11 +1981,6 @@ class PlayState extends MusicBeatSubState
   {
     startingSong = false;
 
-    if (!overrideMusic && !isGamePaused && currentChart != null)
-    {
-      currentChart.playInst(1.0, currentInstrumental, false);
-    }
-
     if (FlxG.sound.music == null)
     {
       FlxG.log.error('PlayState failed to initialize instrumental!');
@@ -2001,7 +1998,6 @@ class PlayState extends MusicBeatSubState
     if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
 
     trace('Playing vocals...');
-    add(vocals);
     vocals.play();
     vocals.volume = 1.0;
     vocals.pitch = playbackRate;

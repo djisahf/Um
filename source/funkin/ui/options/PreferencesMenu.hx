@@ -8,6 +8,11 @@ import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.options.OptionsState.Page;
 import funkin.graphics.FunkinCamera;
 import funkin.ui.TextMenuList.TextMenuItem;
+import funkin.audio.FunkinSound;
+import funkin.ui.options.MenuItemEnums;
+import funkin.ui.options.items.CheckboxPreferenceItem;
+import funkin.ui.options.items.NumberPreferenceItem;
+import funkin.ui.options.items.EnumPreferenceItem;
 
 class PreferencesMenu extends Page
 {
@@ -26,8 +31,11 @@ class PreferencesMenu extends Page
     menuCamera.bgColor = 0x0;
     camera = menuCamera;
 
-    add(items = new TextMenuList());
-    add(preferenceItems = new FlxTypedSpriteGroup<FlxSprite>());
+    items = new TextMenuList();
+    preferenceItems = new FlxTypedSpriteGroup<FlxSprite>();
+
+    add(items);
+    add(preferenceItems);
 
     createPrefItems();
 
@@ -67,77 +75,112 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Auto Pause', 'Automatically pause the game when it loses focus', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
+    createPrefItemPercentage('<Gameplay Bg Opacity>', 'How dark the background behind gameplay should be', function(value:Int):Void {
+      Preferences.gameplayBackgroundAlpha = value;
+    }, Preferences.gameplayBackgroundAlpha, 0, 100);
   }
 
-  function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool):Void
-  {
-    var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(0, 120 * (items.length - 1 + 1), defaultValue);
-
-    items.createItem(120, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function() {
-      var value = !checkbox.currentValue;
-      onChange(value);
-      checkbox.currentValue = value;
-    });
-
-    preferenceItems.add(checkbox);
-  }
-
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
     // Indent the selected item.
-    // TODO: Only do this on menu change?
     items.forEach(function(daItem:TextMenuItem) {
-      if (items.selectedItem == daItem) daItem.x = 150;
+      var thyOffset:Int = 0;
+
+      // Initializing thy text width (if thou text present)
+      var thyTextWidth:Int = 0;
+      if (Std.isOfType(daItem, EnumPreferenceItem)) thyTextWidth = cast(daItem, EnumPreferenceItem).lefthandText.getWidth();
+      else if (Std.isOfType(daItem, NumberPreferenceItem)) thyTextWidth = cast(daItem, NumberPreferenceItem).lefthandText.getWidth();
+
+      if (thyTextWidth != 0)
+      {
+        // Magic number because of the weird offset thats being added by default
+        thyOffset += thyTextWidth - 75;
+      }
+
+      if (items.selectedItem == daItem)
+      {
+        thyOffset += 150;
+      }
       else
-        daItem.x = 120;
+      {
+        thyOffset += 120;
+      }
+
+      daItem.x = thyOffset;
     });
   }
-}
 
-class CheckboxPreferenceItem extends FlxSprite
-{
-  public var currentValue(default, set):Bool;
+  // - Preference item creation methods -
+  // Should be moved into a separate PreferenceItems class but you can't access PreferencesMenu.items and PreferencesMenu.preferenceItems from outside.
 
-  public function new(x:Float, y:Float, defaultValue:Bool = false)
+  /**
+   * Creates a pref item that works with booleans
+   * @param onChange Gets called every time the player changes the value; use this to apply the value
+   * @param defaultValue The value that is loaded in when the pref item is created (usually your Preferences.settingVariable)
+   */
+  function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool):Void
   {
-    super(x, y);
+    var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(0, 120 * (items.length - 1 + 1), defaultValue);
 
-    frames = Paths.getSparrowAtlas('checkboxThingie');
-    animation.addByPrefix('static', 'Check Box unselected', 24, false);
-    animation.addByPrefix('checked', 'Check Box selecting animation', 24, false);
+    items.createItem(0, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function() {
+      var value = !checkbox.currentValue;
+      onChange(value);
+      checkbox.currentValue = value;
+    }, false);
 
-    setGraphicSize(Std.int(width * 0.7));
-    updateHitbox();
-
-    this.currentValue = defaultValue;
+    preferenceItems.add(checkbox);
   }
 
-  override function update(elapsed:Float)
+  /**
+   * Creates a pref item that works with general numbers
+   * @param onChange Gets called every time the player changes the value; use this to apply the value
+   * @param valueFormatter Will get called every time the game needs to display the float value; use this to change how the displayed value looks
+   * @param defaultValue The value that is loaded in when the pref item is created (usually your Preferences.settingVariable)
+   * @param min Minimum value (example: 0)
+   * @param max Maximum value (example: 10)
+   * @param step The value to increment/decrement by (default = 0.1)
+   * @param precision Rounds decimals up to a `precision` amount of digits (ex: 4 -> 0.1234, 2 -> 0.12)
+   */
+  function createPrefItemNumber(prefName:String, prefDesc:String, onChange:Float->Void, ?valueFormatter:Float->String, defaultValue:Float, min:Int, max:Int,
+      step:Float = 0.1, precision:Int):Void
   {
-    super.update(elapsed);
-
-    switch (animation.curAnim.name)
-    {
-      case 'static':
-        offset.set();
-      case 'checked':
-        offset.set(17, 70);
-    }
+    var item = new NumberPreferenceItem(0, (120 * items.length) + 30, prefName, defaultValue, min, max, step, precision, onChange, valueFormatter);
+    items.addItem(prefName, item);
+    preferenceItems.add(item.lefthandText);
   }
 
-  function set_currentValue(value:Bool):Bool
+  /**
+   * Creates a pref item that works with number percentages
+   * @param onChange Gets called every time the player changes the value; use this to apply the value
+   * @param defaultValue The value that is loaded in when the pref item is created (usually your Preferences.settingVariable)
+   * @param min Minimum value (default = 0)
+   * @param max Maximum value (default = 100)
+   */
+  function createPrefItemPercentage(prefName:String, prefDesc:String, onChange:Int->Void, defaultValue:Int, min:Int = 0, max:Int = 100):Void
   {
-    if (value)
-    {
-      animation.play('checked', true);
-    }
-    else
-    {
-      animation.play('static');
-    }
+    var newCallback = function(value:Float) {
+      onChange(Std.int(value));
+    };
+    var formatter = function(value:Float) {
+      return '${value}%';
+    };
+    var item = new NumberPreferenceItem(0, (120 * items.length) + 30, prefName, defaultValue, min, max, 10, 0, newCallback, formatter);
+    items.addItem(prefName, item);
+    preferenceItems.add(item.lefthandText);
+  }
 
-    return currentValue = value;
+  /**
+   * Creates a pref item that works with enums
+   * @param values Maps enum values to display strings _(ex: `NoteHitSoundType.PingPong => "Ping pong"`)_
+   * @param onChange Gets called every time the player changes the value; use this to apply the value
+   * @param defaultValue The value that is loaded in when the pref item is created (usually your Preferences.settingVariable)
+   */
+  function createPrefItemEnum(prefName:String, prefDesc:String, values:Map<String, String>, onChange:String->Void, defaultValue:String):Void
+  {
+    var item = new EnumPreferenceItem(0, (120 * items.length) + 30, prefName, values, defaultValue, onChange);
+    items.addItem(prefName, item);
+    preferenceItems.add(item.lefthandText);
   }
 }

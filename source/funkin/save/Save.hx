@@ -1,7 +1,7 @@
 package funkin.save;
 
 import flixel.util.FlxSave;
-import funkin.util.FileUtil;
+import funkin.util.FileUtil.FileUtilBase;
 import funkin.input.Controls.Device;
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
@@ -925,7 +925,7 @@ class Save
 
   public function debug_dumpSave():Void
   {
-    FileUtil.saveFile(haxe.io.Bytes.ofString(this.serialize()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json', 'Write save data as JSON...');
+    FileUtilBase.saveFile(haxe.io.Bytes.ofString(this.serialize()), [FileUtilBase.FILE_FILTER_JSON], null, null, './save.json', 'Write save data as JSON...');
   }
 }
 

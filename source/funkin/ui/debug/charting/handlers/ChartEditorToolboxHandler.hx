@@ -19,7 +19,7 @@ import funkin.data.stage.StageData;
 import haxe.ui.RuntimeComponentBuilder;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.ui.haxeui.components.CharacterPlayer;
-import funkin.util.FileUtil;
+import funkin.util.FileUtil.FileUtilBase;
 import haxe.ui.components.Button;
 import haxe.ui.data.ArrayDataSource;
 import haxe.ui.components.CheckBox;

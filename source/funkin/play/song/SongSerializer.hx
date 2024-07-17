@@ -3,7 +3,7 @@ package funkin.play.song;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.util.SerializerUtil;
-import funkin.util.FileUtil;
+import funkin.util.FileUtil.FileUtilBase;
 import lime.utils.Bytes;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
@@ -20,7 +20,7 @@ class SongSerializer
    */
   public static function importSongChartDataSync(path:String):SongChartData
   {
-    var fileData = FileUtil.readStringFromPath(path);
+    var fileData = FileUtilBase.readStringFromPath(path);
 
     if (fileData == null) return null;
 
@@ -35,7 +35,7 @@ class SongSerializer
    */
   public static function importSongMetadataSync(path:String):SongMetadata
   {
-    var fileData = FileUtil.readStringFromPath(path);
+    var fileData = FileUtilBase.readStringFromPath(path);
 
     if (fileData == null) return null;
 
@@ -50,7 +50,7 @@ class SongSerializer
    */
   public static function importSongChartDataAsync(callback:SongChartData->Void):Void
   {
-    FileUtil.browseFileReference(function(fileReference:FileReference) {
+    FileUtilBase.browseFileReference(function(fileReference:FileReference) {
       var data = fileReference.data.toString();
 
       if (data == null) return;
@@ -67,7 +67,7 @@ class SongSerializer
    */
   public static function importSongMetadataAsync(callback:SongMetadata->Void):Void
   {
-    FileUtil.browseFileReference(function(fileReference:FileReference) {
+    FileUtilBase.browseFileReference(function(fileReference:FileReference) {
       var data = fileReference.data.toString();
 
       if (data == null) return;

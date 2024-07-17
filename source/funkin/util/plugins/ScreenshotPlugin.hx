@@ -14,6 +14,7 @@ import flixel.util.FlxTimer;
 import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
 import funkin.audio.FunkinSound;
+import funkin.util.FileUtil.FileUtilBase;
 import openfl.display.Bitmap;
 import openfl.display.Sprite;
 import openfl.display.BitmapData;
@@ -267,7 +268,7 @@ class ScreenshotPlugin extends FlxBasic
 
   function openScreenshotsFolder(e:MouseEvent):Void
   {
-    FileUtil.openFolder(SCREENSHOT_FOLDER);
+    FileUtilBase.openFolder(SCREENSHOT_FOLDER);
   }
 
   static function getCurrentState():FlxState
@@ -287,7 +288,7 @@ class ScreenshotPlugin extends FlxBasic
 
   static function makeScreenshotPath():Void
   {
-    FileUtil.createDirIfNotExists(SCREENSHOT_FOLDER);
+    FileUtilBase.createDirIfNotExists(SCREENSHOT_FOLDER);
   }
 
   /**
@@ -318,7 +319,7 @@ class ScreenshotPlugin extends FlxBasic
     {
       trace('Saving screenshot to: ' + targetPath);
       // TODO: Make this work on browser.
-      FileUtil.writeBytesToPath(targetPath, pngData);
+      FileUtilBase.writeBytesToPath(targetPath, pngData);
     }
   }
 }

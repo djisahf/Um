@@ -13,10 +13,11 @@ import haxe.ui.containers.dialogs.Dialogs;
 import haxe.ui.containers.dialogs.Dialogs.SelectedFileInfo;
 import haxe.ui.containers.dialogs.Dialogs.FileDialogExtensionInfo;
 
+using StringTools;
 /**
  * Utilities for reading and writing files on various platforms.
  */
-class FileUtil
+class FileUtilBase
 {
   public static final FILE_FILTER_FNFC:FileFilter = new FileFilter("Friday Night Funkin' Chart (.fnfc)", "*.fnfc");
   public static final FILE_FILTER_JSON:FileFilter = new FileFilter("JSON Data File (.json)", "*.json");
@@ -536,9 +537,7 @@ class FileUtil
     {
       if (isDirectory(path))
       {
-        trace('WARNING: Path is a directory: $path - attempting to move as a directory instead');
-        moveDir(path, destination);
-        return;
+        throw 'Path is a directory: $path';
       }
 
       var destinationFolder:String = destination;
@@ -651,17 +650,19 @@ class FileUtil
     #if sys
     if (!isDirectory(path))
     {
-      trace('WARNING: Path is not a directory: $path, moving as a file instead');
-      moveFile(path, destination);
-      return;
+      throw 'Path is not a directory: $path';
     }
 
     createDirIfNotExists(destination);
+    if (!isDirectory(destination))
+    {
+      throw 'Destination is not a directory: $destination';
+    }
 
     ignore = ignore ?? [];
     for (entry in readDir(path))
     {
-      if (ignore.indexOf(Path.join([path, entry])) != -1) continue;
+      if (ignore.contains(Path.join([path, entry]))) continue;
       if (isDirectory(Path.join([path, entry])))
       {
         moveDir(Path.join([path, entry]), Path.join([destination, entry]), ignore);
@@ -702,7 +703,7 @@ class FileUtil
       ignore = ignore ?? [];
       for (entry in readDir(path))
       {
-        if (ignore.indexOf(Path.join([path, entry])) != -1) continue;
+        if (ignore.contains(Path.join([path, entry]))) continue;
         var entryPath = Path.join([path, entry]);
         if (isDirectory(entryPath))
         {
@@ -718,7 +719,9 @@ class FileUtil
       {
         sys.FileSystem.deleteDirectory(path);
       }
-    } else {
+    }
+    else
+    {
       sys.FileSystem.deleteDirectory(path);
     }
     #else
@@ -819,7 +822,15 @@ class FileUtil
         }
       }
 
-      sys.FileSystem.rename(path, Path.join([Path.directory(path), newName]));
+      newName = Path.join([Path.directory(path), newName]);
+      if (doesFileExist(newName))
+      {
+        throw 'File already exists: $newName';
+      }
+      else
+      {
+        sys.FileSystem.rename(path, newName);
+      }
     }
     else
     {
@@ -931,11 +942,312 @@ class FileUtil
       var filters:Array<String> = [];
       for (type in typeFilter)
       {
-        filters.push(StringTools.replace(StringTools.replace(type.extension, '*.', ''), ';', ','));
+        filters.push(type.extension.replace('*.', '').replace(';', ','));
       }
       filter = filters.join(';');
     }
     return filter;
+  }
+}
+
+/**
+ * Utilities for reading and writing files on various platforms.
+ * Wrapper for `FileUtilBase` that sanitizes paths for script safety.
+ */
+class FileUtil
+{
+  /**
+   * Prevent paths from exiting the root, preventing directory traversal attacks.
+   *
+   * @param path The path to sanitize.
+   * @return The sanitized path.
+   */
+  public static function sanitizePath(path:String):String
+  {
+    path = path.trim().replace('\\', '/');
+
+    if (path.contains(':'))
+    {
+      path = path.substring(path.lastIndexOf(':') + 1);
+    }
+
+    while (path.charAt(0) == '/')
+    {
+      path = path.substring(1);
+    }
+
+    var parts:Array<String> = path.split('/');
+    var sanitized:Array<String> = [];
+    for (part in parts)
+    {
+      switch (part)
+      {
+        case '.':
+        case '':
+          continue;
+        case '..':
+          if (sanitized.length > 0) sanitized.pop();
+        default:
+          sanitized.push(part);
+      }
+    }
+
+    return sanitized.join('/');
+  }
+
+  /**
+    * Paths which should not be deleted or modified by scripts.
+   */
+  private static final PROTECTED:Array<String> = [
+    '',
+    'assets',
+    'manifest',
+    'manifest/*',
+    'plugins',
+    'plugins/*',
+    'Funkin.exe',
+    'Funkin',
+    'libvlc.dll',
+    'libvlccore.dll',
+    'lime.ndll'
+  ];
+
+  /**
+   * Check against protected paths.
+   * @param path The path to check.
+   * @return Whether the path is protected.
+   */
+  public static function isProtected(path:String):Bool
+  {
+    path = sanitizePath(path);
+    for (protectedPath in PROTECTED)
+    {
+      if (path == protectedPath || (protectedPath.contains('*') && path.startsWith(protectedPath.replace('*', ''))))
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  public static final FILE_FILTER_FNFC:FileFilter = FileUtilBase.FILE_FILTER_FNFC;
+  public static final FILE_FILTER_JSON:FileFilter = FileUtilBase.FILE_FILTER_JSON;
+  public static final FILE_FILTER_ZIP:FileFilter = FileUtilBase.FILE_FILTER_ZIP;
+  public static final FILE_FILTER_PNG:FileFilter = FileUtilBase.FILE_FILTER_PNG;
+
+  public static final FILE_EXTENSION_INFO_FNFC:FileDialogExtensionInfo = FileUtilBase.FILE_EXTENSION_INFO_FNFC;
+  public static final FILE_EXTENSION_INFO_ZIP:FileDialogExtensionInfo = FileUtilBase.FILE_EXTENSION_INFO_ZIP;
+  public static final FILE_EXTENSION_INFO_PNG:FileDialogExtensionInfo = FileUtilBase.FILE_EXTENSION_INFO_PNG;
+
+  public static function browseForBinaryFile(dialogTitle:String, ?typeFilter:Array<FileDialogExtensionInfo>, ?onSelect:SelectedFileInfo->Void,
+      ?onCancel:Void->Void)
+  {
+    FileUtilBase.browseForBinaryFile(dialogTitle, typeFilter, onSelect, onCancel);
+  }
+
+  public static function browseForTextFile(dialogTitle:String, ?typeFilter:Array<FileDialogExtensionInfo>, ?onSelect:SelectedFileInfo->Void,
+      ?onCancel:Void->Void)
+  {
+    FileUtilBase.browseForTextFile(dialogTitle, typeFilter, onSelect, onCancel);
+  }
+
+  public static function browseForDirectory(?typeFilter:Array<FileFilter>, ?onSelect:String->Void, ?onCancel:Void->Void, ?defaultPath:String,
+      ?dialogTitle:String):Bool
+  {
+    return FileUtilBase.browseForDirectory(typeFilter, onSelect, onCancel, defaultPath, dialogTitle);
+  }
+
+  public static function browseForMultipleFiles(?typeFilter:Array<FileFilter>, ?onSelect:Array<String>->Void, ?onCancel:Void->Void, ?defaultPath:String,
+      ?dialogTitle:String):Bool
+  {
+    return FileUtilBase.browseForMultipleFiles(typeFilter, onSelect, onCancel, defaultPath, dialogTitle);
+  }
+
+  public static function browseForSaveFile(?typeFilter:Array<FileFilter>, ?onSelect:String->Void, ?onCancel:Void->Void, ?defaultPath:String,
+      ?dialogTitle:String):Bool
+  {
+    return FileUtilBase.browseForSaveFile(typeFilter, onSelect, onCancel, defaultPath, dialogTitle);
+  }
+
+  public static function saveFile(data:Bytes, ?typeFilter:Array<FileFilter>, ?onSave:String->Void, ?onCancel:Void->Void, ?defaultFileName:String,
+      ?dialogTitle:String):Bool
+  {
+    return FileUtilBase.saveFile(data, typeFilter, onSave, onCancel, defaultFileName, dialogTitle);
+  }
+
+  public static function saveMultipleFiles(resources:Array<Entry>, ?onSaveAll:Array<String>->Void, ?onCancel:Void->Void, ?defaultPath:String,
+      force:Bool = false):Bool
+  {
+    return FileUtilBase.saveMultipleFiles(resources, onSaveAll, onCancel, defaultPath, force);
+  }
+
+  public static function saveFilesAsZIP(resources:Array<Entry>, ?onSave:Array<String>->Void, ?onCancel:Void->Void, ?defaultPath:String, force:Bool = false):Bool
+  {
+    return FileUtilBase.saveFilesAsZIP(resources, onSave, onCancel, defaultPath, force);
+  }
+
+  public static function saveChartAsFNFC(resources:Array<Entry>, ?onSave:Array<String>->Void, ?onCancel:Void->Void, ?defaultPath:String,
+      force:Bool = false):Bool
+  {
+    return FileUtilBase.saveChartAsFNFC(resources, onSave, onCancel, defaultPath, force);
+  }
+
+  public static function saveFilesAsZIPToPath(resources:Array<Entry>, path:String, mode:FileWriteMode = Skip):Bool
+  {
+    if (isProtected(path = sanitizePath(path))) return false;
+    return FileUtilBase.saveFilesAsZIPToPath(resources, path, mode);
+  }
+
+  public static function readStringFromPath(path:String):String
+  {
+    path = sanitizePath(path);
+    return FileUtilBase.readStringFromPath(path);
+  }
+
+  public static function readBytesFromPath(path:String):Bytes
+  {
+    path = sanitizePath(path);
+    return FileUtilBase.readBytesFromPath(path);
+  }
+
+  public static function doesFileExist(path:String):Bool
+  {
+    path = sanitizePath(path);
+    return FileUtilBase.doesFileExist(path);
+  }
+
+  public static function browseFileReference(callback:FileReference->Void)
+  {
+    FileUtilBase.browseFileReference(callback);
+  }
+
+  public static function writeFileReference(path:String, data:String)
+  {
+    FileUtilBase.writeFileReference(path, data);
+  }
+
+  public static function readJSONFromPath(path:String):Dynamic
+  {
+    path = sanitizePath(path);
+    return FileUtilBase.readJSONFromPath(path);
+  }
+
+  public static function writeStringToPath(path:String, data:String, mode:FileWriteMode = Skip):Void
+  {
+    if (isProtected(path = sanitizePath(path))) throw 'Cannot write to protected path: $path';
+    FileUtilBase.writeStringToPath(path, data, mode);
+  }
+
+  public static function writeBytesToPath(path:String, data:Bytes, mode:FileWriteMode = Skip):Void
+  {
+    if (isProtected(path = sanitizePath(path))) throw 'Cannot write to protected path: $path';
+    FileUtilBase.writeBytesToPath(path, data, mode);
+  }
+
+  public static function appendStringToPath(path:String, data:String):Void
+  {
+    if (isProtected(path = sanitizePath(path))) throw 'Cannot write to protected path: $path';
+    FileUtilBase.appendStringToPath(path, data);
+  }
+
+  public static function moveFile(path:String, destination:String):Void
+  {
+    if (isProtected(path = sanitizePath(path))) throw 'Cannot move protected path: $path';
+    if (isProtected(destination = sanitizePath(destination))) throw 'Cannot move to protected path: $destination';
+    FileUtilBase.moveFile(path, destination);
+  }
+
+  public static function deleteFile(path:String):Void
+  {
+    if (isProtected(path = sanitizePath(path))) throw 'Cannot delete protected path: $path';
+    FileUtilBase.deleteFile(path);
+  }
+
+  public static function getFileSize(path:String):Int
+  {
+    path = sanitizePath(path);
+    return FileUtilBase.getFileSize(path);
+  }
+
+  public static function isDirectory(path:String):Bool
+  {
+    path = sanitizePath(path);
+    return FileUtilBase.isDirectory(path);
+  }
+
+  public static function createDirIfNotExists(dir:String):Void
+  {
+    dir = sanitizePath(dir);
+    FileUtilBase.createDirIfNotExists(dir);
+  }
+
+  public static function readDir(path:String):Array<String>
+  {
+    path = sanitizePath(path);
+    return FileUtilBase.readDir(path);
+  }
+
+  public static function moveDir(path:String, destination:String, ?ignore:Array<String>):Void
+  {
+    if (isProtected(path = sanitizePath(path))) throw 'Cannot move protected path: $path';
+    if (isProtected(destination = sanitizePath(destination))) throw 'Cannot move to protected path: $destination';
+    FileUtilBase.moveDir(path, destination, ignore);
+  }
+
+  public static function deleteDir(path:String, recursive:Bool = false, ?ignore:Array<String>):Void
+  {
+    if (path.trim().replace('\\', '/').endsWith(':/')) throw 'Absolutely not.';
+    if (isProtected(path = sanitizePath(path))) throw 'Cannot delete protected path: $path';
+    FileUtilBase.deleteDir(path, recursive, ignore);
+  }
+
+  public static function getDirSize(path:String):Int
+  {
+    path = sanitizePath(path);
+    return FileUtilBase.getDirSize(path);
+  }
+
+  public static function getTempDir():String
+  {
+    return FileUtilBase.getTempDir();
+  }
+
+  public static function rename(path:String, newName:String, keepExtension:Bool = true):Void
+  {
+    if (isProtected(path = sanitizePath(path))) throw 'Cannot rename protected path: $path';
+    newName = sanitizePath(newName);
+    FileUtilBase.rename(path, newName, keepExtension);
+  }
+
+  public static function createZIPFromEntries(entries:Array<Entry>):Bytes
+  {
+    return FileUtilBase.createZIPFromEntries(entries);
+  }
+
+  public static function readZIPFromBytes(input:Bytes):Array<Entry>
+  {
+    return FileUtilBase.readZIPFromBytes(input);
+  }
+
+  public static function mapZIPEntriesByName(input:Array<Entry>):Map<String, Entry>
+  {
+    return FileUtilBase.mapZIPEntriesByName(input);
+  }
+
+  public static function makeZIPEntry(name:String, content:String):Entry
+  {
+    return FileUtilBase.makeZIPEntry(name, content);
+  }
+
+  public static function makeZIPEntryFromBytes(name:String, data:haxe.io.Bytes):Entry
+  {
+    return FileUtilBase.makeZIPEntryFromBytes(name, data);
+  }
+
+  public static function openFolder(pathFolder:String)
+  {
+    FileUtilBase.openFolder(pathFolder);
   }
 }
 

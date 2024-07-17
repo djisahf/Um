@@ -13,7 +13,7 @@ import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.save.Save;
-import funkin.util.FileUtil;
+import funkin.util.FileUtil.FileUtilBase;
 import funkin.util.macro.ClassMacro;
 import polymod.backends.PolymodAssets.PolymodAssetType;
 import polymod.format.ParseRules.TextFileFormat;
@@ -63,7 +63,7 @@ class PolymodHandler
    */
   public static function createModRoot():Void
   {
-    FileUtil.createDirIfNotExists(MOD_FOLDER);
+    FileUtilBase.createDirIfNotExists(MOD_FOLDER);
   }
 
   /**
@@ -266,6 +266,10 @@ class PolymodHandler
       var className:String = Type.getClassName(cls);
       Polymod.blacklistImport(className);
     }
+
+    // `FileUtilBase`
+    // has unrestricted filesystem access
+    Polymod.blacklistImport('funkin.util.FileUtilBase');
   }
 
   static function buildParseRules():polymod.format.ParseRules

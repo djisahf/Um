@@ -4,7 +4,7 @@ import flixel.system.FlxAssets.FlxSoundAsset;
 import funkin.audio.VoicesGroup;
 import funkin.audio.FunkinSound;
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.util.FileUtil;
+import funkin.util.FileUtil.FileUtilBase;
 import funkin.util.assets.SoundUtil;
 import funkin.util.TimerUtil;
 import funkin.audio.waveform.WaveformData;
@@ -340,7 +340,7 @@ class ChartEditorAudioHandler
           trace('[WARN] Failed to access inst track ($key)');
           continue;
         }
-        zipEntries.push(FileUtil.makeZIPEntryFromBytes('Inst.ogg', data));
+        zipEntries.push(FileUtilBase.makeZIPEntryFromBytes('Inst.ogg', data));
       }
       else
       {
@@ -350,7 +350,7 @@ class ChartEditorAudioHandler
           trace('[WARN] Failed to access inst track ($key)');
           continue;
         }
-        zipEntries.push(FileUtil.makeZIPEntryFromBytes('Inst-${key}.ogg', data));
+        zipEntries.push(FileUtilBase.makeZIPEntryFromBytes('Inst-${key}.ogg', data));
       }
     }
 
@@ -375,7 +375,7 @@ class ChartEditorAudioHandler
         trace('[WARN] Failed to access vocal track ($key)');
         continue;
       }
-      zipEntries.push(FileUtil.makeZIPEntryFromBytes('Voices-${key}.ogg', data));
+      zipEntries.push(FileUtilBase.makeZIPEntryFromBytes('Voices-${key}.ogg', data));
     }
 
     return zipEntries;

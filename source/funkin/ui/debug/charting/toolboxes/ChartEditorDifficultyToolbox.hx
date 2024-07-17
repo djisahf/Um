@@ -13,7 +13,7 @@ import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import funkin.data.song.SongData.SongMetadata;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.HorizontalSlider;
-import funkin.util.FileUtil;
+import funkin.util.FileUtil.FileUtilBase;
 import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
 import funkin.play.song.SongSerializer;
 import haxe.ui.components.Label;
@@ -97,12 +97,12 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
 
     difficultyToolboxSaveMetadata.onClick = function(_:UIEvent) {
       var vari:String = chartEditorState.selectedVariation != Constants.DEFAULT_VARIATION ? '-${chartEditorState.selectedVariation}' : '';
-      FileUtil.writeFileReference('${chartEditorState.currentSongId}$vari-metadata.json', chartEditorState.currentSongMetadata.serialize());
+      FileUtilBase.writeFileReference('${chartEditorState.currentSongId}$vari-metadata.json', chartEditorState.currentSongMetadata.serialize());
     };
 
     difficultyToolboxSaveChart.onClick = function(_:UIEvent) {
       var vari:String = chartEditorState.selectedVariation != Constants.DEFAULT_VARIATION ? '-${chartEditorState.selectedVariation}' : '';
-      FileUtil.writeFileReference('${chartEditorState.currentSongId}$vari-chart.json', chartEditorState.currentSongChartData.serialize());
+      FileUtilBase.writeFileReference('${chartEditorState.currentSongId}$vari-chart.json', chartEditorState.currentSongChartData.serialize());
     };
 
     difficultyToolboxLoadMetadata.onClick = function(_:UIEvent) {

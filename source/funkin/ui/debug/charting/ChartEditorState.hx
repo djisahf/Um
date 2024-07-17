@@ -92,7 +92,7 @@ import funkin.ui.haxeui.HaxeUIState;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.transition.LoadingState;
 import funkin.util.Constants;
-import funkin.util.FileUtil;
+import funkin.util.FileUtil.FileUtilBase;
 import funkin.util.logging.CrashHandler;
 import funkin.util.SortUtil;
 import funkin.util.WindowUtil;
@@ -2348,7 +2348,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
       }
 
-      if (!FileUtil.doesFileExist(chartPath))
+      if (!FileUtilBase.doesFileExist(chartPath))
       {
         trace('Previously loaded chart file (${chartPath.toString()}) does not exist, disabling link...');
         menuItemRecentChart.disabled = true;

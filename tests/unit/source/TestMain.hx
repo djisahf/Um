@@ -7,7 +7,7 @@ import massive.munit.TestRunner;
 import massive.munit.client.HTTPClient;
 import massive.munit.client.SummaryReportClient;
 import funkin.util.logging.CrashHandler;
-import funkin.util.FileUtil;
+import funkin.util.FileUtil.FileUtilBase;
 
 /**
  * Auto generated Test Application.
@@ -50,7 +50,7 @@ class TestMain
       // NOTE: You can also create a custom ICoverageTestResultClient implementation
 
       // Output coverage in LCOV format.
-      FileUtil.createDirIfNotExists(COVERAGE_FOLDER);
+      FileUtilBase.createDirIfNotExists(COVERAGE_FOLDER);
       mcover.coverage.MCoverage.getLogger().addClient(new mcover.coverage.client.LcovPrintClient("Funkin' Coverage Report", '${COVERAGE_FOLDER}/lcov.info'));
       #else
       // Print individual test results.

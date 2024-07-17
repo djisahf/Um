@@ -5,7 +5,7 @@ import funkin.play.song.Song;
 import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
-import funkin.util.FileUtil;
+import funkin.util.FileUtil.FileUtilBase;
 import funkin.util.SortUtil;
 import haxe.ui.components.Label;
 import haxe.ui.components.Link;
@@ -111,7 +111,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
       }
     }
 
-    if (!FileUtil.doesFileExist(chartPath))
+    if (!FileUtilBase.doesFileExist(chartPath))
     {
       trace('Previously loaded chart file (${chartPath}) does not exist, disabling link...');
       linkRecentChart.disabled = true;

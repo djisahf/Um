@@ -957,7 +957,7 @@ class FileUtilBase
 class FileUtil
 {
   /**
-   * Prevent paths from exiting the root, preventing directory traversal attacks.
+   * Prevent paths from exiting the root.
    *
    * @param path The path to sanitize.
    * @return The sanitized path.

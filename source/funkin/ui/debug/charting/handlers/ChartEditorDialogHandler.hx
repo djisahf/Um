@@ -23,7 +23,7 @@ import funkin.ui.debug.charting.dialogs.ChartEditorUploadVocalsDialog;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.util.Constants;
 import funkin.util.DateUtil;
-import funkin.util.FileUtil.FileUtilBase;
+import funkin.util.FileUtil;
 import funkin.util.SerializerUtil;
 import funkin.util.SortUtil;
 import funkin.util.VersionUtil;
@@ -850,7 +850,7 @@ class ChartEditorDialogHandler
       var path:Path = new Path(pathStr);
       trace('Dropped JSON file (${path})');
 
-      var songMetadataTxt:String = FileUtilBase.readStringFromPath(path.toString());
+      var songMetadataTxt:String = FileUtil.readStringFromPath(path.toString());
 
       var songMetadataVersion:Null<Version> = VersionUtil.getVersionFromJSON(songMetadataTxt);
       if (songMetadataVersion == null)
@@ -932,7 +932,7 @@ class ChartEditorDialogHandler
       var path:Path = new Path(pathStr);
       trace('Dropped JSON file (${path})');
 
-      var songChartDataTxt:String = FileUtilBase.readStringFromPath(path.toString());
+      var songChartDataTxt:String = FileUtil.readStringFromPath(path.toString());
 
       var songChartDataVersion:Null<Version> = VersionUtil.getVersionFromJSON(songChartDataTxt);
       if (songChartDataVersion == null)
@@ -1110,7 +1110,7 @@ class ChartEditorDialogHandler
 
     onDropFile = function(pathStr:String) {
       var path:Path = new Path(pathStr);
-      var selectedFileText:String = FileUtilBase.readStringFromPath(path.toString());
+      var selectedFileText:String = FileUtil.readStringFromPath(path.toString());
       var selectedFileData:FNFLegacyData = FNFLegacyImporter.parseLegacyDataRaw(selectedFileText, path.toString());
       var songMetadata:SongMetadata = FNFLegacyImporter.migrateMetadata(selectedFileData);
       var songChartData:SongChartData = FNFLegacyImporter.migrateChartData(selectedFileData);

@@ -3,7 +3,7 @@ package funkin.ui.debug.charting.dialogs;
 import funkin.input.Cursor;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
-import funkin.util.FileUtil.FileUtilBase;
+import funkin.util.FileUtil;
 import haxe.io.Path;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
@@ -96,9 +96,9 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
     this.lock();
     // TODO / BUG: File filtering not working on mac finder dialog, so we don't use it for now
     #if !mac
-    FileUtilBase.browseForBinaryFile('Open Chart', [FileUtilBase.FILE_EXTENSION_INFO_FNFC], onSelectFile, onCancelBrowse);
+    FileUtil.browseForBinaryFile('Open Chart', [FileUtil.FILE_EXTENSION_INFO_FNFC], onSelectFile, onCancelBrowse);
     #else
-    FileUtilBase.browseForBinaryFile('Open Chart', null, onSelectFile, onCancelBrowse);
+    FileUtil.browseForBinaryFile('Open Chart', null, onSelectFile, onCancelBrowse);
     #end
   }
 

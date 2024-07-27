@@ -13,7 +13,7 @@ import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.save.Save;
-import funkin.util.FileUtil.FileUtilBase;
+import funkin.util.FileUtil;
 import funkin.util.macro.ClassMacro;
 import polymod.backends.PolymodAssets.PolymodAssetType;
 import polymod.format.ParseRules.TextFileFormat;
@@ -63,7 +63,7 @@ class PolymodHandler
    */
   public static function createModRoot():Void
   {
-    FileUtilBase.createDirIfNotExists(MOD_FOLDER);
+    FileUtil.createDirIfNotExists(MOD_FOLDER);
   }
 
   /**
@@ -230,7 +230,10 @@ class PolymodHandler
 
     // Add import aliases for certain classes.
     // NOTE: Scripted classes are automatically aliased to their parent class.
+
     Polymod.addImportAlias('flixel.math.FlxPoint', flixel.math.FlxPoint.FlxBasePoint);
+
+    Polymod.addImportAlias('funkin.util.FileUtil', funkin.util.FileUtil.FileUtilSandboxed);
 
     // Add blacklisting for prohibited classes and packages.
 
@@ -266,10 +269,6 @@ class PolymodHandler
       var className:String = Type.getClassName(cls);
       Polymod.blacklistImport(className);
     }
-
-    // `FileUtilBase`
-    // has unrestricted filesystem access
-    Polymod.blacklistImport('funkin.util.FileUtilBase');
   }
 
   static function buildParseRules():polymod.format.ParseRules

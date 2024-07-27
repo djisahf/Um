@@ -5,7 +5,7 @@ import funkin.util.DateUtil;
 import haxe.io.Path;
 import funkin.util.SerializerUtil;
 import funkin.util.SortUtil;
-import funkin.util.FileUtil.FileUtilBase;
+import funkin.util.FileUtil;
 import funkin.util.FileUtil.FileWriteMode;
 import haxe.io.Bytes;
 import funkin.play.song.Song;
@@ -149,7 +149,7 @@ class ChartEditorImportExportHandler
    */
   public static function loadFromFNFCPath(state:ChartEditorState, path:String):Null<Array<String>>
   {
-    var bytes:Null<Bytes> = FileUtilBase.readBytesFromPath(path);
+    var bytes:Null<Bytes> = FileUtil.readBytesFromPath(path);
     if (bytes == null) return null;
 
     trace('Loaded ${bytes.length} bytes from $path');
@@ -178,8 +178,8 @@ class ChartEditorImportExportHandler
     var songMetadatas:Map<String, SongMetadata> = [];
     var songChartDatas:Map<String, SongChartData> = [];
 
-    var fileEntries:Array<haxe.zip.Entry> = FileUtilBase.readZIPFromBytes(bytes);
-    var mappedFileEntries:Map<String, haxe.zip.Entry> = FileUtilBase.mapZIPEntriesByName(fileEntries);
+    var fileEntries:Array<haxe.zip.Entry> = FileUtil.readZIPFromBytes(bytes);
+    var mappedFileEntries:Map<String, haxe.zip.Entry> = FileUtil.mapZIPEntriesByName(fileEntries);
 
     var manifestBytes:Null<Bytes> = mappedFileEntries.get('manifest.json')?.data;
     if (manifestBytes == null) throw 'Could not locate manifest.';
@@ -388,14 +388,14 @@ class ChartEditorImportExportHandler
         {
           variationMetadata.version = funkin.data.song.SongRegistry.SONG_METADATA_VERSION;
           variationMetadata.generatedBy = funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY;
-          zipEntries.push(FileUtilBase.makeZIPEntry('${state.currentSongId}-metadata.json', variationMetadata.serialize()));
+          zipEntries.push(FileUtil.makeZIPEntry('${state.currentSongId}-metadata.json', variationMetadata.serialize()));
         }
         var variationChart:Null<SongChartData> = state.songChartData.get(variation);
         if (variationChart != null)
         {
           variationChart.version = funkin.data.song.SongRegistry.SONG_CHART_DATA_VERSION;
           variationChart.generatedBy = funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY;
-          zipEntries.push(FileUtilBase.makeZIPEntry('${state.currentSongId}-chart.json', variationChart.serialize()));
+          zipEntries.push(FileUtil.makeZIPEntry('${state.currentSongId}-chart.json', variationChart.serialize()));
         }
       }
       else
@@ -403,14 +403,14 @@ class ChartEditorImportExportHandler
         var variationMetadata:Null<SongMetadata> = state.songMetadata.get(variation);
         if (variationMetadata != null)
         {
-          zipEntries.push(FileUtilBase.makeZIPEntry('${state.currentSongId}-metadata-$variationId.json', variationMetadata.serialize()));
+          zipEntries.push(FileUtil.makeZIPEntry('${state.currentSongId}-metadata-$variationId.json', variationMetadata.serialize()));
         }
         var variationChart:Null<SongChartData> = state.songChartData.get(variation);
         if (variationChart != null)
         {
           variationChart.version = funkin.data.song.SongRegistry.SONG_CHART_DATA_VERSION;
           variationChart.generatedBy = funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY;
-          zipEntries.push(FileUtilBase.makeZIPEntry('${state.currentSongId}-chart-$variationId.json', variationChart.serialize()));
+          zipEntries.push(FileUtil.makeZIPEntry('${state.currentSongId}-chart-$variationId.json', variationChart.serialize()));
         }
       }
     }
@@ -419,7 +419,7 @@ class ChartEditorImportExportHandler
     if (state.audioVocalTrackData != null) zipEntries = zipEntries.concat(state.makeZIPEntriesFromVocals());
 
     var manifest:ChartManifestData = new ChartManifestData(state.currentSongId);
-    zipEntries.push(FileUtilBase.makeZIPEntry('manifest.json', manifest.serialize()));
+    zipEntries.push(FileUtil.makeZIPEntry('manifest.json', manifest.serialize()));
 
     trace('Exporting ${zipEntries.length} files to ZIP...');
 
@@ -438,7 +438,7 @@ class ChartEditorImportExportHandler
         trace('Force exporting to $targetPath...');
         try
         {
-          FileUtilBase.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
+          FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
           // On success.
           if (onSaveCb != null) onSaveCb(targetPath);
         }
@@ -455,7 +455,7 @@ class ChartEditorImportExportHandler
         try
         {
           // On success.
-          FileUtilBase.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
+          FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
           state.saveDataDirty = false;
           if (onSaveCb != null) onSaveCb(targetPath);
         }
@@ -492,7 +492,7 @@ class ChartEditorImportExportHandler
       trace('Exporting to user-defined location...');
       try
       {
-        FileUtilBase.saveChartAsFNFC(zipEntries, onSave, onCancel, '${state.currentSongId}.${Constants.EXT_CHART}');
+        FileUtil.saveChartAsFNFC(zipEntries, onSave, onCancel, '${state.currentSongId}.${Constants.EXT_CHART}');
         state.saveDataDirty = false;
       }
       catch (e) {}

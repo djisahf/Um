@@ -10,7 +10,7 @@ import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.MusicBeatSubState;
 import funkin.util.logging.CrashHandler;
 import flixel.addons.transition.FlxTransitionableState;
-import funkin.util.FileUtil.FileUtilBase;
+import funkin.util.FileUtil;
 
 class DebugMenuSubState extends MusicBeatSubState
 {
@@ -122,7 +122,7 @@ class DebugMenuSubState extends MusicBeatSubState
   #if sys
   function openLogFolder()
   {
-    FileUtilBase.openFolder(CrashHandler.LOG_FOLDER);
+    FileUtil.openFolder(CrashHandler.LOG_FOLDER);
   }
   #end
 

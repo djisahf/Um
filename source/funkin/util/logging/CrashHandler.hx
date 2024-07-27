@@ -4,7 +4,7 @@ import openfl.Lib;
 import openfl.events.UncaughtErrorEvent;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.FlxG.FlxRenderMethod;
-import funkin.util.FileUtil.FileUtilBase;
+import funkin.util.FileUtil;
 
 /**
  * A custom crash handler that writes to a log file and displays a message box.
@@ -107,7 +107,7 @@ class CrashHandler
 
   static function logErrorMessage(message:String, critical:Bool = false):Void
   {
-    FileUtilBase.createDirIfNotExists(LOG_FOLDER);
+    FileUtil.createDirIfNotExists(LOG_FOLDER);
 
     sys.io.File.saveContent('$LOG_FOLDER/crash${critical ? '-critical' : ''}-${DateUtil.generateTimestamp()}.log', buildCrashReport(message));
   }

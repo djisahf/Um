@@ -4,7 +4,6 @@ import openfl.Lib;
 import openfl.events.UncaughtErrorEvent;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.FlxG.FlxRenderMethod;
-import funkin.util.FileUtil;
 
 /**
  * A custom crash handler that writes to a log file and displays a message box.

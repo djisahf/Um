@@ -14,7 +14,6 @@ import flixel.util.FlxTimer;
 import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
 import funkin.audio.FunkinSound;
-import funkin.util.FileUtil;
 import openfl.display.Bitmap;
 import openfl.display.Sprite;
 import openfl.display.BitmapData;

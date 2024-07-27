@@ -20,7 +20,7 @@ class SongSerializer
    */
   public static function importSongChartDataSync(path:String):SongChartData
   {
-    var fileData = FileUtilBase.readStringFromPath(path);
+    var fileData = FileUtil.readStringFromPath(path);
 
     if (fileData == null) return null;
 
@@ -35,7 +35,7 @@ class SongSerializer
    */
   public static function importSongMetadataSync(path:String):SongMetadata
   {
-    var fileData = FileUtilBase.readStringFromPath(path);
+    var fileData = FileUtil.readStringFromPath(path);
 
     if (fileData == null) return null;
 
@@ -50,7 +50,7 @@ class SongSerializer
    */
   public static function importSongChartDataAsync(callback:SongChartData->Void):Void
   {
-    FileUtilBase.browseFileReference(function(fileReference:FileReference) {
+    FileUtil.browseFileReference(function(fileReference:FileReference) {
       var data = fileReference.data.toString();
 
       if (data == null) return;
@@ -67,7 +67,7 @@ class SongSerializer
    */
   public static function importSongMetadataAsync(callback:SongMetadata->Void):Void
   {
-    FileUtilBase.browseFileReference(function(fileReference:FileReference) {
+    FileUtil.browseFileReference(function(fileReference:FileReference) {
       var data = fileReference.data.toString();
 
       if (data == null) return;

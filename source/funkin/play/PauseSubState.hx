@@ -163,7 +163,7 @@ class PauseSubState extends MusicBeatSubState
   var metadataPractice:FlxText;
 
   /**
-   * A text object that displays the current practice mode status.
+   * A text object that displays the current botplay mode status.
    */
   var metadataBot:FlxText;
 

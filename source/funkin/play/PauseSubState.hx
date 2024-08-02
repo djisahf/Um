@@ -313,9 +313,17 @@ class PauseSubState extends MusicBeatSubState
 
     metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, FlxG.width - 40, '');
     if (Preferences.naughtyness) {
-      metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, FlxG.width - 40, '${PlayState.instance?.deathCounter} Blue Balls');
+      if PlayState.instance?.deathCounter = 1 {
+        metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, FlxG.width - 40, '${PlayState.instance?.deathCounter} Blue Ball');
+      } else {
+        metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, FlxG.width - 40, '${PlayState.instance?.deathCounter} Blue Balls');
+      }
     } else {
-      metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, FlxG.width - 40, '${PlayState.instance?.deathCounter} Deaths');
+      if PlayState.instance?.deathCounter = 1 {
+        metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, FlxG.width - 40, '${PlayState.instance?.deathCounter} Death');
+      } else {
+        metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, FlxG.width - 40, '${PlayState.instance?.deathCounter} Deaths');
+      }
     }
     metadataDeaths.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataDeaths.scrollFactor.set(0, 0);

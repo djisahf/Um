@@ -163,6 +163,11 @@ class PauseSubState extends MusicBeatSubState
   var metadataPractice:FlxText;
 
   /**
+   * A text object that displays the current practice mode status.
+   */
+  var metadataBot:FlxText;
+
+  /**
    * A text object that displays the current death count.
    */
   var metadataDeaths:FlxText;
@@ -334,6 +339,12 @@ class PauseSubState extends MusicBeatSubState
     metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
     metadataPractice.scrollFactor.set(0, 0);
     metadata.add(metadataPractice);
+
+    metadataBot = new FlxText(20, metadataDeaths.y + 32, FlxG.width - 40, 'BOTPLAY ENABLED');
+    metadataBot.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
+    metadataBot.visible = PlayState.instance?.isBotPlayMode ?? false;
+    metadataBot.scrollFactor.set(0, 0);
+    metadata.add(metadataBot);
 
     updateMetadataText();
   }

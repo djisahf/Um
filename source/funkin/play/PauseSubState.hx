@@ -316,7 +316,9 @@ class PauseSubState extends MusicBeatSubState
     metadataDifficulty.scrollFactor.set(0, 0);
     metadata.add(metadataDifficulty);
 
-    metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, FlxG.width - 40, '${PlayState.instance?.deathCounter} ${Preferences.naughtyness ? 'Blue Ball' : 'Death'}${PlayState.instance?.deathCounter == 1 ? '' : 's'}');
+    var deathText = Preferences.naughtyness ? 'Blue Ball' : 'Death';
+    var possiblyS = PlayState.instance?.deathCounter == 1 ? '' : 's';
+    metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, FlxG.width - 40, '${PlayState.instance?.deathCounter} $deathText$possiblyS');
     metadataDeaths.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataDeaths.scrollFactor.set(0, 0);
     metadata.add(metadataDeaths);

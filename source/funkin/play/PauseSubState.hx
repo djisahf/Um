@@ -327,7 +327,12 @@ class PauseSubState extends MusicBeatSubState
     metadataPractice.scrollFactor.set(0, 0);
     metadata.add(metadataPractice);
 
-    metadataBot = new FlxText(20, metadataPractice.y + 32, FlxG.width - 40, 'BOTPLAY ENABLED');
+    metadataBot = new FlxText(20, metadataPractice.y + 32, FlxG.width - 40, '');
+    if (metadataPractice.visible) {
+      metadataBot = new FlxText(20, metadataPractice.y + 32, FlxG.width - 40, 'BOTPLAY ENABLED');
+    } else {
+      metadataBot = new FlxText(20, metadataDeaths.y + 32, FlxG.width - 40, 'BOTPLAY ENABLED');
+    }
     metadataBot.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataBot.visible = PlayState.instance?.isBotPlayMode ?? false;
     metadataBot.scrollFactor.set(0, 0);

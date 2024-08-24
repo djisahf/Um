@@ -232,6 +232,11 @@ class PolymodHandler
     // NOTE: Scripted classes are automatically aliased to their parent class.
     Polymod.addImportAlias('flixel.math.FlxPoint', flixel.math.FlxPoint.FlxBasePoint);
 
+    // Backward compatibility for certain scripted classes outside `funkin.modding.base`.
+    Polymod.addImportAlias('funkin.modding.base.ScriptedFunkinSprite', funkin.graphics.ScriptedFunkinSprite);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatState', funkin.ui.ScriptedMusicBeatState);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatSubState', funkin.ui.ScriptedMusicBeatSubState);
+
     // Add blacklisting for prohibited classes and packages.
 
     // `Sys`

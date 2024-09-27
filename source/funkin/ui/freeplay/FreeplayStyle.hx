@@ -61,15 +61,6 @@ class FreeplayStyle implements IRegistryEntry<FreeplayStyleData>
   }
 
   /**
-   * Get the asset key for the number assets.
-   * @return The asset key
-   */
-  public function getCapsuleAssetKey():String
-  {
-    return _data.capsuleAsset;
-  }
-
-  /**
    * Get the asset key for the capsule art.
    * @return The asset key
    */
@@ -86,6 +77,36 @@ class FreeplayStyle implements IRegistryEntry<FreeplayStyleData>
   public function getCapsuleDeselCol():FlxColor
   {
     return FlxColor.fromString(_data.capsuleTextColors[0]);
+  }
+
+  /**
+   * Return the color of the selected capsule bg
+   * for freeplay capsules.
+   * @return The color
+   */
+  public function getCapsuleBGcolor():FlxColor
+  {
+    return FlxColor.fromString(_data.capsuleColors[0]);
+  }
+
+  /**
+   * Return the deselected color of the capsule bg
+   * for freeplay capsules.
+   * @return The deselected color
+   */
+  public function getCapsuleBGdeselectedColor():FlxColor
+  {
+    return FlxColor.fromString(_data.capsuleColors[1]);
+  }
+
+  /**
+   * Return the glow color for the capsule
+   * for freeplay capsules.
+   * @return The glow color
+   */
+  public function getCapsuleGlowColor():FlxColor
+  {
+    return FlxColor.fromString(_data.capsuleColors[2]);
   }
 
   /**

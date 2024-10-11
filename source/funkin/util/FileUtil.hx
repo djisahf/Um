@@ -18,7 +18,7 @@ using StringTools;
 /**
  * Utilities for reading and writing files on various platforms.
  */
-class FileUtil
+@:keep class FileUtil
 {
   public static final FILE_FILTER_FNFC:FileFilter = new FileFilter("Friday Night Funkin' Chart (.fnfc)", "*.fnfc");
   public static final FILE_FILTER_JSON:FileFilter = new FileFilter("JSON Data File (.json)", "*.json");
@@ -962,7 +962,7 @@ class FileUtil
  * Utilities for reading and writing files on various platforms.
  * Wrapper for `FileUtil` that sanitizes paths for script safety.
  */
-class FileUtilSandboxed
+@:keep class FileUtilSandboxed
 {
   /**
    * Prevent paths from exiting the root.

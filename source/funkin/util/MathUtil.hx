@@ -3,7 +3,7 @@ package funkin.util;
 /**
  * Utilities for performing mathematical operations.
  */
-class MathUtil
+@:keep class MathUtil
 {
   /**
    * Euler's constant and the base of the natural logarithm.

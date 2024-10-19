@@ -685,7 +685,7 @@ class PlayState extends MusicBeatSubState
     }
 
     Conductor.instance.mapTimeChanges(currentChart.timeChanges);
-    var pre:Float = (Conductor.instance.beatLengthMs * -5) + startTimestamp;
+    var pre:Float = (Conductor.instance.beatLengthMs * -5) + startTimestamp + Conductor.instance.combinedOffset;
 
     trace('Attempting to start at ' + pre);
 
@@ -860,9 +860,9 @@ class PlayState extends MusicBeatSubState
       // Reset music properly.
       if (FlxG.sound.music != null)
       {
-        FlxG.sound.music.time = startTimestamp;
-        FlxG.sound.music.pitch = playbackRate;
         FlxG.sound.music.pause();
+        FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
+        FlxG.sound.music.pitch = playbackRate;
       }
 
       if (!overrideMusic)
@@ -877,7 +877,7 @@ class PlayState extends MusicBeatSubState
         }
       }
       vocals.pause();
-      vocals.time = 0;
+      vocals.time = 0 - Conductor.instance.instrumentalOffset;
 
       if (FlxG.sound.music != null) FlxG.sound.music.volume = 1;
       vocals.volume = 1;
@@ -918,7 +918,7 @@ class PlayState extends MusicBeatSubState
       {
         // Do NOT apply offsets at this point, because they already got applied the previous frame!
         Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false);
-        if (Conductor.instance.songPosition >= (startTimestamp - Conductor.instance.instrumentalOffset))
+        if (Conductor.instance.songPosition >= (startTimestamp + Conductor.instance.combinedOffset))
         {
           trace("started song at " + Conductor.instance.songPosition);
           startSong();
@@ -2081,6 +2081,7 @@ class PlayState extends MusicBeatSubState
     };
     // A negative instrumental offset means the song skips the first few milliseconds of the track.
     // This just gets added into the startTimestamp behavior so we don't need to do anything extra.
+    FlxG.sound.music.pause();
     FlxG.sound.music.time = Math.max(0, startTimestamp - Conductor.instance.instrumentalOffset);
     FlxG.sound.music.pitch = playbackRate;
 
@@ -2090,13 +2091,13 @@ class PlayState extends MusicBeatSubState
 
     trace('Playing vocals...');
     add(vocals);
-    vocals.play();
+    // vocals.play();
     vocals.volume = 1.0;
     vocals.pitch = playbackRate;
     vocals.time = FlxG.sound.music.time;
     // trace('${FlxG.sound.music.time}');
     // trace('${vocals.time}');
-    resyncVocals();
+    resyncVocals(true);
 
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence (with Time Left)
@@ -2123,15 +2124,15 @@ class PlayState extends MusicBeatSubState
   /**
      * Resyncronize the vocal tracks if they have become offset from the instrumental.
      */
-  function resyncVocals():Void
+  function resyncVocals(songStart:Bool = false):Void
   {
     if (vocals == null) return;
 
     // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
-    if (!(FlxG.sound.music?.playing ?? false)) return;
+    if (!songStart && !(FlxG.sound.music?.playing ?? false)) return;
 
-    // var timeToPlayAt:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition - Conductor.instance.combinedOffset));
-    var timeToPlayAt:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition));
+    var timeToPlayAt:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition) - (songStart ? 0 : Conductor.instance.combinedOffset));
+
     trace('Resyncing vocals to ${timeToPlayAt}');
     FlxG.sound.music.pause();
     vocals.pause();

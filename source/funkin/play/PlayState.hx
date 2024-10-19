@@ -2091,13 +2091,14 @@ class PlayState extends MusicBeatSubState
 
     trace('Playing vocals...');
     add(vocals);
-    // vocals.play();
     vocals.volume = 1.0;
     vocals.pitch = playbackRate;
     vocals.time = FlxG.sound.music.time;
     // trace('${FlxG.sound.music.time}');
     // trace('${vocals.time}');
-    resyncVocals(true);
+
+    FlxG.sound.music.play();
+    vocals.play();
 
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence (with Time Left)
@@ -2124,16 +2125,16 @@ class PlayState extends MusicBeatSubState
   /**
      * Resyncronize the vocal tracks if they have become offset from the instrumental.
      */
-  function resyncVocals(songStart:Bool = false):Void
+  function resyncVocals():Void
   {
     if (vocals == null) return;
 
     // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
-    if (!songStart && !(FlxG.sound.music?.playing ?? false)) return;
+    if (!(FlxG.sound.music?.playing ?? false)) return;
 
-    var timeToPlayAt:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition) - (songStart ? 0 : Conductor.instance.combinedOffset));
-
+    var timeToPlayAt:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition) - Conductor.instance.combinedOffset);
     trace('Resyncing vocals to ${timeToPlayAt}');
+
     FlxG.sound.music.pause();
     vocals.pause();
 

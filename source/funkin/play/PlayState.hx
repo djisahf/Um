@@ -877,7 +877,7 @@ class PlayState extends MusicBeatSubState
         }
       }
       vocals.pause();
-      vocals.time = 0 - Conductor.instance.instrumentalOffset;
+      vocals.time = -Conductor.instance.instrumentalOffset;
 
       if (FlxG.sound.music != null) FlxG.sound.music.volume = 1;
       vocals.volume = 1;
@@ -2091,6 +2091,7 @@ class PlayState extends MusicBeatSubState
 
     trace('Playing vocals...');
     add(vocals);
+
     vocals.volume = 1.0;
     vocals.pitch = playbackRate;
     vocals.time = FlxG.sound.music.time;
@@ -2132,7 +2133,7 @@ class PlayState extends MusicBeatSubState
     // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
     if (!(FlxG.sound.music?.playing ?? false)) return;
 
-    var timeToPlayAt:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition) - Conductor.instance.combinedOffset);
+    var timeToPlayAt:Float = Math.min(FlxG.sound.music.length, Math.max(Math.min(Conductor.instance.combinedOffset, 0), Conductor.instance.songPosition) - Conductor.instance.combinedOffset);
     trace('Resyncing vocals to ${timeToPlayAt}');
 
     FlxG.sound.music.pause();

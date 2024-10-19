@@ -63,7 +63,7 @@ class Countdown
     stopCountdown();
 
     PlayState.instance.isInCountdown = true;
-    Conductor.instance.update(PlayState.instance.startTimestamp + Conductor.instance.combinedOffset + Conductor.instance.beatLengthMs * -5);
+    Conductor.instance.update(PlayState.instance.startTimestamp + Conductor.instance.beatLengthMs * -5);
     // Handle onBeatHit events manually
     // @:privateAccess
     // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(SONG_BEAT_HIT, 0, 0));

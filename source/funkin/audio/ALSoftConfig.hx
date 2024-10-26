@@ -9,7 +9,7 @@ import haxe.io.Path;
  * The config overrides a few global OpenALSoft settings with the aim of
  * improving audio quality on desktop targets.
  */
-@:keep class ALSoftConfig
+class ALSoftConfig
 {
   #if desktop
   static function __init__():Void

@@ -52,8 +52,8 @@ class TimerUtil
 
 typedef SequenceEvent =
 {
-  time: Float,
-  callback: ()->Void
+  time:Float,
+  callback:()->Void
 };
 
 /**
@@ -149,7 +149,11 @@ class SongSequence
    */
   public function new(events:Array<SequenceEvent>, mult:Float = 1, start:Bool = true)
   {
-    for (event in events) timers.push(event);
+    for (event in events)
+    {
+      event.time *= mult * 1000;
+      timers.push(event);
+    }
 
     startTime = Conductor.instance.songPosition;
     running = start;

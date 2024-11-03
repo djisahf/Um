@@ -414,8 +414,12 @@ class GameOverSubState extends MusicBeatSubState
       PlayState.instance.currentStage.addCharacter(boyfriend, BF);
     }
 
-    // Stop playing the music.
-    gameOverMusic.stop();
+    // If you mash a little too fast...
+    if (gameOverMusic != null)
+    {
+      // Stop playing the music.
+      gameOverMusic.stop();
+    }
 
     // Snap reset the camera which may have changed because of the player character data.
     resetCameraZoom();

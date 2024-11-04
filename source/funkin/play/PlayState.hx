@@ -2601,7 +2601,6 @@ class PlayState extends MusicBeatSubState
           });
       }
     }
-    vocals.playerVolume = 0;
 
     applyScore(-10, 'miss', healthChange, true);
 
@@ -2662,7 +2661,6 @@ class PlayState extends MusicBeatSubState
 
     if (event.playSound)
     {
-      vocals.playerVolume = 0;
       FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
     }
   }

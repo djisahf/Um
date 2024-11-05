@@ -198,7 +198,7 @@ class GhostMissNoteScriptEvent extends ScriptEvent
   /**
    * How much score should be lost when this ghost note is pressed.
    */
-  public var scoreChange(default, default):Int;
+  public var scoreChange(default, default):Float;
 
   /**
    * Whether to play the record scratch sound.
@@ -210,7 +210,7 @@ class GhostMissNoteScriptEvent extends ScriptEvent
    */
   public var playAnim(default, default):Bool;
 
-  public function new(dir:NoteDirection, hasPossibleNotes:Bool, healthChange:Float, scoreChange:Int):Void
+  public function new(dir:NoteDirection, hasPossibleNotes:Bool, healthChange:Float, scoreChange:Float):Void
   {
     super(NOTE_GHOST_MISS, true);
     this.dir = dir;

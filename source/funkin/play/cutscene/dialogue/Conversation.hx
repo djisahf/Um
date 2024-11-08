@@ -30,22 +30,13 @@ import funkin.util.EaseUtil;
  *
  * This shit is great for modders but it's pretty elaborate for how much it'll actually be used, lolol. -Eric
  */
+@:build(funkin.util.macro.RegistryMacro.buildEntry())
 class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass implements IRegistryEntry<ConversationData>
 {
-  /**
-   * The ID of the conversation.
-   */
-  public final id:String;
-
   /**
    * The current state of the conversation.
    */
   var state:ConversationState = ConversationState.Start;
-
-  /**
-   * Conversation data as parsed from the JSON file.
-   */
-  public final _data:ConversationData;
 
   /**
    * The current entry in the dialogue.
@@ -630,16 +621,6 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
       outroTween.cancel();
       outroTween = null;
     }
-  }
-
-  public override function toString():String
-  {
-    return 'Conversation($id)';
-  }
-
-  static function _fetchData(id:String):Null<ConversationData>
-  {
-    return ConversationRegistry.instance.parseEntryDataWithMigration(id, ConversationRegistry.instance.fetchEntryVersion(id));
   }
 }
 

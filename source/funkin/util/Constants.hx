@@ -56,6 +56,11 @@ class Constants
   #end
 
   /**
+   * Wether or not the game is a debug build.
+   */
+  public static final DEBUG_BUILD:Bool = #if FEATURE_DEBUG_FUNCTIONS true #else false #end;
+
+  /**
    * URL DATA
    */
   // ==============================

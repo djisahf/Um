@@ -113,6 +113,16 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Auto Pause', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
+
+    #if web
+    createPrefItemCheckbox('Unlocked Framerate', 'Enable to unlock the framerate', function(value:Bool):Void {
+      Preferences.unlockedFramerate = value;
+    }, Preferences.unlockedFramerate);
+    #else
+    createPrefItemNumber('FPS', 'The maximum framerate that the game targets', function(value:Float) {
+      Preferences.framerate = Std.int(value);
+    }, null, Preferences.framerate, 30, 300, 5, 0);
+    #end
   }
 
   override function update(elapsed:Float):Void
@@ -122,7 +132,6 @@ class PreferencesMenu extends Page
     // Indent the selected item.
     items.forEach(function(daItem:TextMenuItem) {
       var thyOffset:Int = 0;
-
       // Initializing thy text width (if thou text present)
       var thyTextWidth:Int = 0;
       if (Std.isOfType(daItem, EnumPreferenceItem)) thyTextWidth = cast(daItem, EnumPreferenceItem).lefthandText.getWidth();

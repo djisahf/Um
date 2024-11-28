@@ -194,17 +194,17 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   {
     if (danceEvery == 0 || shouldAlternate || this.animation.getByName('idle$idleSuffix') == null || shouldBop)
     {
+      // for forced bopping, alternating dance and non-existing animation, it just works the same as before
       _realDanceEvery = danceEvery;
       return;
     }
 
     var daIdle = this.animation.getByName('idle$idleSuffix');
+    var numeratorTweak:Int = (Conductor.instance.timeSignatureNumerator % 2 == 0) ? 2 : Conductor.instance.timeSignatureNumerator; // hopefully we get only prime numbers...
     if (FlxMath.getDecimals(danceEvery) == 0) // for int danceEvery
     {
-      trace("THAT'S AN INT FOR DANCEEVERY");
       var idlePerBeat:Float = (daIdle.numFrames / daIdle.frameRate) / (Conductor.instance.beatLengthMs / 1000);
       var danceEveryNumBeats:Int = Math.ceil(idlePerBeat);
-      var numeratorTweak:Int = (Conductor.instance.timeSignatureNumerator % 2 == 0) ? 2 : 3;
       if (danceEveryNumBeats > numeratorTweak)
       {
         while (danceEveryNumBeats % numeratorTweak != 0)
@@ -212,9 +212,12 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
       }
       _realDanceEvery = Math.max(danceEvery, danceEveryNumBeats);
     }
-    else // to do: for danceEvery with decimals
+    else // for decymal danceEvery (X.25, X.50 and X.75)
     {
+      // maybe to rework, for the moment it tries to have the same patern every sections
       _realDanceEvery = danceEvery;
+      while ((4 * _realDanceEvery * Conductor.instance.stepLengthMs) < (daIdle.numFrames / daIdle.frameRate))
+        _realDanceEvery *= numeratorTweak;
     }
   }
 
